@@ -1,0 +1,24 @@
+Problem → Students hesitate to ask doubts due to fear/shame.
+
+Solution → Anonymous Q&A platform for students, live feed for professors.
+
+Scope for Phase 1 →
+✅ Student submits anonymous question
+✅ Professor sees all questions in dashboard
+✅ Mark questions as answered
+-----------------------------------------------------------------------------
+MVP Features (Minimum Working App):
+
+Student Side: Submit anonymous question
+
+Professor Side: Login → View questions → Mark answered
+
+Future Features (After MVP works):
+
+Upvote questions
+
+Categorize by subject/topic
+
+Live updates (Socket.IO)
+
+Analytics (most asked topic, common doubts)
