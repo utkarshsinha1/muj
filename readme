@@ -1,24 +1,45 @@
-Problem → Students hesitate to ask doubts due to fear/shame.
+# Manipal Jaipur Classroom Q&A Web App
 
-Solution → Anonymous Q&A platform for students, live feed for professors.
+A premium, real-time web application for anonymous classroom Q&A, designed for Manipal Jaipur. Students can ask questions anonymously, upvote/downvote, and join sessions using a class code. Teachers host sessions, view and manage questions, and mark them as answered.
 
-Scope for Phase 1 →
-✅ Student submits anonymous question
-✅ Professor sees all questions in dashboard
-✅ Mark questions as answered
------------------------------------------------------------------------------
-MVP Features (Minimum Working App):
+## Features
+- Anonymous student question submission
+- Upvote/downvote system (one vote per device per question)
+- Real-time updates (Socket.io)
+- Session/class code system for joining
+- Separate student and teacher interfaces
+- Premium Manipal Jaipur branding and UI
+- Responsive design
 
-Student Side: Submit anonymous question
+## File Structure
+- `index.html` — Main web app UI
+- `style.css` — Premium Manipal Jaipur theme and styles
+- `app.js` — Frontend logic (session, voting, rendering)
+- `session-server.js` — Node.js/Express backend (sessions, questions, voting, Socket.io)
+- `questions.json` — Stores questions and votes
+- `muj.webp` — Manipal Jaipur logo
+- `readme` — Project documentation
 
-Professor Side: Login → View questions → Mark answered
+## Getting Started
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+2. **Start the server:**
+   ```bash
+   node session-server.js
+   ```
+3. **Open `index.html` in your browser.**
+   - For real-time features, ensure the backend is running.
 
-Future Features (After MVP works):
+## Customization
+- Update `style.css` for further UI enhancements.
+- Replace `muj.webp` for custom branding.
 
-Upvote questions
+## Deployment
+- Can be run locally or deployed to cloud platforms supporting Node.js (e.g., Heroku, Vercel).
 
-Categorize by subject/topic
+node session-server.js
 
-Live updates (Socket.IO)
-
-Analytics (most asked topic, common doubts)
+---
+Made for Manipal Jaipur. For support or feedback, contact the developer @Utkarsh Sinha 8318570327 .

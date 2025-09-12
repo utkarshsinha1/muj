@@ -1,0 +1,317 @@
+/* Premium Manipal Jaipur-inspired UI with light theme */
+body {
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(230,81,0,0.10), 0 1.5px 8px rgba(0,0,0,0.08);
+  padding: 40px 32px 32px 32px;
+  border-top: 10px solid #e65100;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInContainer 1.2s cubic-bezier(.77,0,.18,1) 0.1s both;
+}
+@keyframes fadeInContainer {
+  0% { opacity: 0; transform: translateY(40px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.container:before {
+  content: '';
+  position: absolute;
+  top: -60px; left: -60px;
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, #e65100 0%, #fff3e0 80%);
+  opacity: 0.12;
+  border-radius: 50%;
+  z-index: 0;
+}
+.section {
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+  background: rgba(255,243,224,0.85);
+  box-shadow: 0 2px 12px rgba(230,81,0,0.07);
+  border-radius: 18px;
+  padding: 32px 24px;
+  animation: fadeInSection 1.2s cubic-bezier(.77,0,.18,1) 0.3s both;
+}
+@keyframes fadeInSection {
+  0% { opacity: 0; transform: translateY(30px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+h1 {
+  font-size: 2.4em;
+  font-weight: 900;
+  color: #e65100;
+  margin-bottom: 0;
+  letter-spacing: 2.5px;
+  margin-top: 18px;
+}
+.premium-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.logo-wrap {
+  display: inline-block;
+  background: linear-gradient(135deg,#fff3e0 60%,#e65100 100%);
+  border-radius: 24px;
+  box-shadow: 0 4px 24px rgba(230,81,0,0.12);
+  padding: 18px 32px 12px 32px;
+}
+.logo-wrap img {
+  height: 80px;
+  margin-bottom: 8px;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px #ffe0b2;
+}
+.premium-header div {
+  font-size: 1.18em;
+  color: #bf360c;
+  margin-bottom: 8px;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+.premium-header .logo-wrap + h1 {
+  margin-top: 18px;
+}
+.premium-header .logo-wrap + h1 + div {
+  margin-bottom: 8px;
+}
+.premium-header .logo-wrap + h1 + div + div {
+  margin-top: 10px;
+  font-size: 1em;
+  color: #e65100;
+  font-weight: 400;
+}
+.hidden { display: none; }
+.questions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.question-item {
+  background: #fff3e0;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 8px solid #e65100;
+  box-shadow: 0 2px 8px rgba(230,81,0,0.07);
+  transition: box-shadow 0.2s, transform 0.2s;
+  animation: slideInQuestion 0.7s cubic-bezier(.77,0,.18,1);
+}
+@keyframes slideInQuestion {
+  0% { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.answered {
+  opacity: 0.6;
+  text-decoration: line-through;
+  background: #ffe0b2;
+}
+button {
+  background: #e65100;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 700;
+  margin-left: 6px;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+  box-shadow: 0 1px 4px rgba(230,81,0,0.08);
+}
+button:hover {
+  background: #bf360c;
+  box-shadow: 0 2px 8px rgba(230,81,0,0.15);
+  transform: scale(1.07);
+}
+.upvote, .downvote {
+  background: #fff3e0;
+  color: #e65100;
+  font-size: 1.3em;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 2px solid #e65100;
+  margin: 0 2px;
+  box-shadow: 0 1px 4px #ffe0b2;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.upvote:hover {
+  background: #ffe0b2;
+  color: #388e3c;
+  border-color: #388e3c;
+  transform: scale(1.15) rotate(-8deg);
+}
+.downvote:hover {
+  background: #ffe0b2;
+  color: #d32f2f;
+  border-color: #d32f2f;
+  transform: scale(1.15) rotate(8deg);
+}
+.code-box {
+  font-size: 1.3em;
+  font-weight: 700;
+  background: #fff3e0;
+  padding: 10px 20px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-bottom: 16px;
+  border-left: 8px solid #e65100;
+  color: #e65100;
+  box-shadow: 0 1px 4px #ffe0b2;
+  animation: fadeInCodeBox 1s cubic-bezier(.77,0,.18,1) 0.2s both;
+}
+@keyframes fadeInCodeBox {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.remove-btn {
+  background: #bf360c;
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 20px;
+  transition: background 0.2s, transform 0.2s;
+}
+.remove-btn:hover {
+  background: #e65100;
+  transform: scale(1.07);
+}
+#role-section button {
+  background: #e65100;
+  color: #fff;
+  margin-right: 16px;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-size: 1.1em;
+  box-shadow: 0 1px 4px #ffe0b2;
+  transition: background 0.2s, transform 0.2s;
+}
+#role-section button:hover {
+  background: #bf360c;
+  transform: scale(1.07);
+}
+#student-message {
+  color: #388e3c;
+  font-weight: 500;
+  margin-top: 8px;
+  font-size: 1.1em;
+  transition: opacity 0.4s;
+}
+input, textarea {
+  font-size: 1em;
+  border-radius: 8px;
+  border: 1.5px solid #e65100;
+  padding: 10px;
+  margin-bottom: 8px;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px #ffe0b2;
+}
+input:focus, textarea:focus {
+  border-color: #bf360c;
+  outline: none;
+  box-shadow: 0 2px 8px #ffe0b2;
+}
+/* Premium teacher dashboard styles (fallback to previous version) */
+#teacher-section {
+  background: linear-gradient(135deg, #fff3e0 60%, #ffe0b2 100%);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(230,81,0,0.13), 0 2px 12px rgba(0,0,0,0.10);
+  padding: 40px 32px 32px 32px;
+  border-top: 8px solid #e65100;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInSection 1.2s cubic-bezier(.77,0,.18,1) 0.3s both;
+}
+#teacher-section h2 {
+  font-size: 2.2em;
+  font-weight: 800;
+  color: #e65100;
+  margin-bottom: 18px;
+  letter-spacing: 1.5px;
+  text-align: center;
+}
+#teacher-section #startClassBtn {
+  display: block;
+  margin: 0 auto 18px auto;
+  background: linear-gradient(90deg, #e65100 70%, #ff9800 100%);
+  color: #fff;
+  border-radius: 10px;
+  padding: 14px 32px;
+  font-size: 1.15em;
+  font-weight: 700;
+  box-shadow: 0 2px 8px #ffe0b2;
+  transition: background 0.2s, transform 0.2s;
+}
+#teacher-section #startClassBtn:hover {
+  background: linear-gradient(90deg, #bf360c 70%, #e65100 100%);
+  transform: scale(1.07);
+}
+#teacher-section .code-box {
+  display: block;
+  margin: 0 auto 24px auto;
+  font-size: 1.2em;
+  font-weight: 700;
+  background: #fff3e0;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border-left: 8px solid #e65100;
+  color: #e65100;
+  box-shadow: 0 1px 4px #ffe0b2;
+  animation: fadeInCodeBox 1s cubic-bezier(.77,0,.18,1) 0.2s both;
+}
+#teacherQuestionsList .question-item {
+  background: linear-gradient(90deg, #fff3e0 60%, #ffe0b2 100%);
+  border-radius: 14px;
+  margin-bottom: 18px;
+  padding: 20px 24px;
+  border-left: 8px solid #e65100;
+  box-shadow: 0 2px 8px rgba(230,81,0,0.10);
+  transition: box-shadow 0.2s, transform 0.2s;
+  animation: slideInQuestion 0.7s cubic-bezier(.77,0,.18,1);
+}
+#teacherQuestionsList .question-item:hover {
+  box-shadow: 0 8px 24px rgba(230,81,0,0.18);
+  transform: translateY(-2px) scale(1.02);
+}
+#teacherQuestionsList .answered {
+  opacity: 0.5;
+  text-decoration: line-through;
+  background: #ffe0b2;
+}
+#teacherQuestionsList button {
+  background: linear-gradient(90deg, #e65100 70%, #ff9800 100%);
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 24px;
+  font-size: 1em;
+  font-weight: 700;
+  box-shadow: 0 1px 4px #ffe0b2;
+  transition: background 0.2s, transform 0.2s;
+  margin-left: 8px;
+}
+#teacherQuestionsList button:hover {
+  background: linear-gradient(90deg, #bf360c 70%, #e65100 100%);
+  transform: scale(1.07);
+}
+#teacherQuestionsList .remove-btn {
+  background: linear-gradient(90deg, #bf360c 70%, #e65100 100%);
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 24px;
+}
+#teacherQuestionsList .remove-btn:hover {
+  background: linear-gradient(90deg, #e65100 70%, #ff9800 100%);
+}

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Q&A - Manipal Jaipur</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Roboto', sans-serif; background: linear-gradient(135deg, #e3f2fd 0%, #fff3e0 100%); margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 14px; box-shadow: 0 4px 16px rgba(25,118,210,0.10); padding: 32px; border-top: 8px solid #1976d2; }
+    h2 { color: #1976d2; font-size: 2em; margin-bottom: 12px; letter-spacing: 1px; text-shadow: 0 2px 8px #bbdefb; }
+    .code-box { font-size: 1.1em; font-weight: 700; background: #e3f2fd; padding: 8px 16px; border-radius: 8px; display: inline-block; margin-bottom: 12px; border-left: 6px solid #1976d2; color: #1976d2; box-shadow: 0 1px 4px #bbdefb; }
+    form { margin-bottom: 16px; }
+    input, textarea { font-size: 1em; border-radius: 8px; border: 1.5px solid #1976d2; padding: 10px; margin-bottom: 8px; background: #fff; transition: border-color 0.2s; width: 100%; }
+    input:focus, textarea:focus { border-color: #0d47a1; outline: none; }
+    button { background: #1976d2; color: #fff; border-radius: 8px; border: none; box-shadow: 0 1px 4px #bbdefb; transition: background 0.2s; padding: 10px 20px; font-size: 1rem; font-weight: 700; }
+    button:hover { background: #0d47a1; }
+    .questions-list { list-style: none; padding: 0; margin: 0; }
+    .question-item { background: #e3f2fd; border-radius: 8px; margin-bottom: 12px; padding: 16px; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #1976d2; box-shadow: 0 2px 8px rgba(25,118,210,0.07); }
+    .answered { background: #bbdefb; opacity: 0.6; text-decoration: line-through; }
+    .upvote, .downvote { background: #e3f2fd; color: #1976d2; font-size: 1.2em; padding: 2px 8px; border-radius: 4px; border: 1px solid #1976d2; margin: 0 2px; box-shadow: 0 1px 4px #bbdefb; transition: background 0.2s, color 0.2s; }
+    .upvote:hover { background: #bbdefb; color: #388e3c; border-color: #388e3c; }
+    .downvote:hover { background: #bbdefb; color: #d32f2f; border-color: #d32f2f; }
+    #student-message { color: #388e3c; font-weight: 500; margin-top: 8px; font-size: 1.1em; }
+    @media (max-width: 600px) { .container { padding: 12px 4px; } h2 { font-size: 1.3em; } .code-box { font-size: 1em; padding: 8px 10px; } button { padding: 8px 12px; font-size: 0.95em; } .question-item { padding: 10px 8px; } }
+  </style>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>Join Class</h2>
+    <form id="joinForm">
+      <input id="classCodeInput" placeholder="Enter class code" required>
+      <button type="submit">Join</button>
+    </form>
+    <div id="studentClassBox" class="code-box" style="display:none;"></div>
+    <form id="questionForm" style="display:none;">
+      <textarea id="questionInput" placeholder="Type your question here..." required></textarea>
+      <button type="submit">Submit Question</button>
+      <div id="student-message"></div>
+    </form>
+    <ul class="questions-list" id="studentQuestionsList"></ul>
+  </div>
+  <script>
+    let socket, currentClassCode = null;
+    document.getElementById('joinForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const code = document.getElementById('classCodeInput').value.trim().toUpperCase();
+      const res = await fetch('/join-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ classCode: code })
+      });
+      if (res.ok) {
+        currentClassCode = code;
+        document.getElementById('studentClassBox').textContent = 'Class Code: ' + currentClassCode;
+        document.getElementById('studentClassBox').style.display = '';
+        document.getElementById('questionForm').style.display = '';
+        socket = io();
+        socket.emit('join', currentClassCode);
+        socket.on('questions', renderStudentQuestions);
+      } else {
+        alert('Invalid class code');
+      }
+    };
+    document.getElementById('questionForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const question = document.getElementById('questionInput').value.trim();
+      if (!question) return;
+      const res = await fetch(`/questions/${currentClassCode}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question })
+      });
+      if (res.ok) {
+        document.getElementById('student-message').textContent = 'Question submitted!';
+        document.getElementById('questionInput').value = '';
+        setTimeout(() => {
+          document.getElementById('student-message').textContent = '';
+        }, 2000);
+      } else {
+        document.getElementById('student-message').textContent = 'Error submitting question.';
+      }
+    };
+    function renderStudentQuestions(questions) {
+      const list = document.getElementById('studentQuestionsList');
+      list.innerHTML = '';
+      questions.sort((a,b) => b.votes - a.votes);
+      questions.forEach(q => {
+        const li = document.createElement('li');
+        li.className = 'question-item' + (q.answered ? ' answered' : '');
+        li.innerHTML = `<span>${q.text}</span>
+          <span>
+            <button class='upvote' onclick="upvoteQuestion('${q.id}')">&#x25B2;</button>
+            <span style="margin:0 8px; font-weight:700;">${q.votes || 0}</span>
+            <button class='downvote' onclick="downvoteQuestion('${q.id}')">&#x25BC;</button>
+            ${q.answered ? '<em>Answered</em>' : ''}
+          </span>`;
+        list.appendChild(li);
+      });
+    }
+    async function upvoteQuestion(id) {
+      await fetch(`/questions/${currentClassCode}/${id}/upvote`, { method: 'POST' });
+    }
+    async function downvoteQuestion(id) {
+      await fetch(`/questions/${currentClassCode}/${id}/downvote`, { method: 'POST' });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Dashboard - Manipal Jaipur</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Roboto', sans-serif; background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); margin: 0; padding: 0; }
+    .container { max-width: 700px; margin: 40px auto; background: #fff; border-radius: 14px; box-shadow: 0 4px 16px rgba(230,81,0,0.10); padding: 32px; border-top: 8px solid #e65100; }
+    h2 { color: #e65100; font-size: 2em; margin-bottom: 12px; letter-spacing: 1px; text-shadow: 0 2px 8px #ffe0b2; }
+    .code-box { font-size: 1.1em; font-weight: 700; background: #fff3e0; padding: 8px 16px; border-radius: 8px; display: inline-block; margin-bottom: 12px; border-left: 6px solid #e65100; color: #e65100; box-shadow: 0 1px 4px #ffe0b2; }
+    button { background: #e65100; color: #fff; border-radius: 8px; border: none; box-shadow: 0 1px 4px #ffe0b2; transition: background 0.2s; padding: 10px 20px; font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    button:hover { background: #bf360c; }
+    .questions-list { list-style: none; padding: 0; margin: 0; }
+    .question-item { background: #fff3e0; border-radius: 8px; margin-bottom: 12px; padding: 16px; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #e65100; box-shadow: 0 2px 8px rgba(230,81,0,0.07); }
+    .answered { background: #ffe0b2; opacity: 0.6; text-decoration: line-through; }
+    .remove-btn { background: #bf360c; color: #fff; border-radius: 8px; padding: 10px 20px; }
+    .remove-btn:hover { background: #e65100; }
+    @media (max-width: 600px) { .container { padding: 12px 4px; } h2 { font-size: 1.3em; } .code-box { font-size: 1em; padding: 8px 10px; } button { padding: 8px 12px; font-size: 0.95em; } .question-item { padding: 10px 8px; } }
+  </style>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>Teacher Dashboard</h2>
+    <button id="startClassBtn">Start Class</button>
+    <div id="classCodeBox" class="code-box" style="display:none;"></div>
+    <ul class="questions-list" id="teacherQuestionsList"></ul>
+  </div>
+  <script>
+    let socket, currentClassCode = null;
+    document.getElementById('startClassBtn').onclick = async function() {
+      const res = await fetch('/start-session', { method: 'POST' });
+      const data = await res.json();
+      currentClassCode = data.classCode;
+      document.getElementById('classCodeBox').textContent = 'Class Code: ' + currentClassCode;
+      document.getElementById('classCodeBox').style.display = '';
+      socket = io();
+      socket.emit('join', currentClassCode);
+      socket.on('questions', renderTeacherQuestions);
+    };
+    function renderTeacherQuestions(questions) {
+      const list = document.getElementById('teacherQuestionsList');
+      list.innerHTML = '';
+      questions.sort((a,b) => b.votes - a.votes);
+      questions.forEach(q => {
+        const li = document.createElement('li');
+        li.className = 'question-item' + (q.answered ? ' answered' : '');
+        li.innerHTML = `<span>${q.text}</span>
+          <span>
+            <span style="margin:0 8px; font-weight:700;">${q.votes || 0}</span>
+            <button onclick="markAnswered('${q.id}')">Mark as Answered</button>
+            <button class='remove-btn' onclick="removeQuestion('${q.id}')">Remove</button>
+          </span>`;
+        list.appendChild(li);
+      });
+    }
+    async function markAnswered(id) {
+      await fetch(`/questions/${currentClassCode}/${id}/answer`, { method: 'POST' });
+    }
+    async function removeQuestion(id) {
+      await fetch(`/questions/${currentClassCode}/${id}`, { method: 'DELETE' });
+    }
+  </script>
+</body>
+</html>

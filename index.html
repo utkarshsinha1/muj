@@ -4,99 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Classroom Q&amp;A Sessions</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&amp;display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: #f7f8fa;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 900px;
-      margin: 40px auto;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      padding: 32px;
-    }
-    .section {
-      margin-bottom: 32px;
-    }
-    h2 {
-      margin-top: 0;
-      font-weight: 700;
-      color: #2d3748;
-    }
-    .hidden {
-      display: none;
-    }
-    .questions-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .question-item {
-      background: #f2f4f8;
-      border-radius: 6px;
-      margin-bottom: 12px;
-      padding: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .answered {
-      opacity: 0.6;
-      text-decoration: line-through;
-    }
-    button {
-      background: #2563eb;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 16px;
-      font-size: 1rem;
-      cursor: pointer;
-      font-weight: 700;
-      margin-left: 4px;
-    }
-    button:hover {
-      background: #1e40af;
-    }
-    .upvote, .downvote {
-      background: #e5e7eb;
-      color: #2563eb;
-      font-size: 1.2em;
-      padding: 2px 8px;
-      border-radius: 4px;
-    }
-    .upvote:hover {
-      background: #dbeafe;
-    }
-    .downvote:hover {
-      background: #fee2e2;
-    }
-    .code-box {
-      font-size: 1.3em;
-      font-weight: 700;
-      background: #f2f4f8;
-      padding: 8px 16px;
-      border-radius: 6px;
-      display: inline-block;
-      margin-bottom: 12px;
-    }
-    .remove-btn {
-      background: #ef4444;
-      color: #fff;
-    }
-    .remove-btn:hover {
-      background: #b91c1c;
-    }
-  </style>
 </head>
 <body>
   <div class="container">
+    <div class="premium-header" style="text-align:center; margin-bottom:32px;">
+      <div class="logo-wrap" style="display:inline-block; background:linear-gradient(135deg,#fff3e0 60%,#e65100 100%); border-radius:24px; box-shadow:0 4px 24px rgba(230,81,0,0.12); padding:18px 32px 12px 32px;">
+        <img src="muj.webp" alt="Manipal Jaipur Logo" style="height:80px; margin-bottom:8px; border-radius:16px; box-shadow:0 2px 12px #ffe0b2;">
+      </div>
+      <h1 style="font-size:2.4em; font-weight:900; color:#e65100; margin-bottom:0; letter-spacing:2.5px; margin-top:18px;">Manipal Jaipur Q&amp;A</h1>
+      <div style="font-size:1.18em; color:#bf360c; margin-bottom:8px; font-weight:500; letter-spacing:1px;">Ask, Vote, and Learn Together</div>
+      <div style="margin-top:10px; font-size:1em; color:#e65100; font-weight:400;">Empowering every student to speak up</div>
+    </div>
     <!-- Role selection -->
     <div class="section" id="role-section">
       <h2>Choose your role</h2>
@@ -114,129 +35,18 @@
     <div class="section hidden" id="student-section">
       <h2>Join Class</h2>
       <form id="joinForm">
-        <input id="classCodeInput" placeholder="Enter class code" required style="padding:8px; font-size:1em; border-radius:6px; border:1px solid #cbd5e1;">
+        <input id="classCodeInput" placeholder="Enter class code" required>
         <button type="submit">Join</button>
       </form>
       <div id="studentClassBox" class="code-box hidden"></div>
       <form id="questionForm" class="hidden">
-        <textarea id="questionInput" placeholder="Type your question here..." required style="width:100%; min-height:60px; margin-top:8px; border-radius:6px; border:1px solid #cbd5e1; padding:8px;"></textarea>
+        <textarea id="questionInput" placeholder="Type your question here..." required></textarea>
         <button type="submit">Submit Question</button>
         <div id="student-message" style="color: #059669; font-weight: 500;"></div>
       </form>
       <ul class="questions-list" id="studentQuestionsList"></ul>
     </div>
   </div>
-  <script>
-    let socket, currentClassCode = null, isTeacher = false;
-    // Role selection
-    function showTeacher() {
-      document.getElementById('role-section').classList.add('hidden');
-      document.getElementById('teacher-section').classList.remove('hidden');
-    }
-    function showStudent() {
-      document.getElementById('role-section').classList.add('hidden');
-      document.getElementById('student-section').classList.remove('hidden');
-    }
-    // Teacher: Start class
-    document.getElementById('startClassBtn').onclick = async function() {
-      const res = await fetch('/start-session', { method: 'POST' });
-      const data = await res.json();
-      currentClassCode = data.classCode;
-      isTeacher = true;
-      document.getElementById('classCodeBox').textContent = 'Class Code: ' + currentClassCode;
-      document.getElementById('classCodeBox').classList.remove('hidden');
-      socket = io();
-      socket.emit('join', currentClassCode);
-      socket.on('questions', renderTeacherQuestions);
-    };
-    // Teacher: Render questions
-    function renderTeacherQuestions(questions) {
-      const list = document.getElementById('teacherQuestionsList');
-      list.innerHTML = '';
-      questions.sort((a,b) => b.votes - a.votes);
-      questions.forEach(q => {
-        const li = document.createElement('li');
-        li.className = 'question-item' + (q.answered ? ' answered' : '');
-        li.innerHTML = `<span>${q.text}</span>
-          <span>
-            <span style="margin:0 8px; font-weight:700;">${q.votes || 0}</span>
-            <button onclick="markAnswered('${q.id}')">Mark as Answered</button>
-            <button class='remove-btn' onclick="removeQuestion('${q.id}')">Remove</button>
-          </span>`;
-        list.appendChild(li);
-      });
-    }
-    async function markAnswered(id) {
-      await fetch(`/questions/${currentClassCode}/${id}/answer`, { method: 'POST' });
-    }
-    async function removeQuestion(id) {
-      await fetch(`/questions/${currentClassCode}/${id}`, { method: 'DELETE' });
-    }
-    // Student: Join class
-    document.getElementById('joinForm').onsubmit = async function(e) {
-      e.preventDefault();
-      const code = document.getElementById('classCodeInput').value.trim().toUpperCase();
-      const res = await fetch('/join-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ classCode: code })
-      });
-      if (res.ok) {
-        currentClassCode = code;
-        document.getElementById('studentClassBox').textContent = 'Class Code: ' + currentClassCode;
-        document.getElementById('studentClassBox').classList.remove('hidden');
-        document.getElementById('questionForm').classList.remove('hidden');
-        socket = io();
-        socket.emit('join', currentClassCode);
-        socket.on('questions', renderStudentQuestions);
-      } else {
-        alert('Invalid class code');
-      }
-    };
-    // Student: Submit question
-    document.getElementById('questionForm').onsubmit = async function(e) {
-      e.preventDefault();
-      const question = document.getElementById('questionInput').value.trim();
-      if (!question) return;
-      const res = await fetch(`/questions/${currentClassCode}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question })
-      });
-      if (res.ok) {
-        document.getElementById('student-message').textContent = 'Question submitted!';
-        document.getElementById('questionInput').value = '';
-        setTimeout(() => {
-          document.getElementById('student-message').textContent = '';
-        }, 2000);
-      } else {
-        document.getElementById('student-message').textContent = 'Error submitting question.';
-      }
-    };
-    // Student: Render questions
-    function renderStudentQuestions(questions) {
-      const list = document.getElementById('studentQuestionsList');
-      list.innerHTML = '';
-      questions.sort((a,b) => b.votes - a.votes);
-      questions.forEach(q => {
-        const li = document.createElement('li');
-        li.className = 'question-item' + (q.answered ? ' answered' : '');
-        li.innerHTML = `<span>${q.text}</span>
-          <span>
-            <button class='upvote' onclick="upvoteQuestion('${q.id}')">&#x25B2;</button>
-            <span style="margin:0 8px; font-weight:700;">${q.votes || 0}</span>
-            <button class='downvote' onclick="downvoteQuestion('${q.id}')">&#x25BC;</button>
-            ${q.answered ? '<em>Answered</em>' : ''}
-          </span>`;
-        list.appendChild(li);
-      });
-    }
-    async function upvoteQuestion(id) {
-      await fetch(`/questions/${currentClassCode}/${id}/upvote`, { method: 'POST' });
-    }
-    async function downvoteQuestion(id) {
-      await fetch(`/questions/${currentClassCode}/${id}/downvote`, { method: 'POST' });
-    }
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
